@@ -2,11 +2,6 @@ import telebot
 import calc
 import sqlite3
 
-
-con = sqlite3.connect("food.db", check_same_thread=False)
-cur = con.cursor()
-
-
 bot = telebot.TeleBot('5510516119:AAFv8yr225_zo-Q9d8ao5QhBggFM7E9c44U')
 
 global eaten_food
@@ -16,6 +11,8 @@ global parametrs
 parametrs = []
 
 def Search_name(a):
+    con = sqlite3.connect("food.db", check_same_thread=False)
+    cur = con.cursor()
     s = []
     s.append(a)
     f = (a.split(' '))
@@ -29,7 +26,16 @@ def Search_name(a):
         print(x)
         sql = f"SELECT * FROM food WHERE name LIKE '%{x}%'"
     cur.execute(sql)
+    con.close()
     return (cur.fetchmany(10))
+
+def Add_user(list):
+    con2 = sqlite3.connect("users.db", check_same_thread=False)
+    cur2 = con2.cursor()
+    cur2.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?)", list)
+    con2.commit()
+    con2.close()
+    print("User added")
 
 @bot.message_handler(commands=["start", 'help'])
 def start(m):
@@ -139,7 +145,9 @@ def norm_kcal(message):
                 if (parametrs != [0]):
                     parametrs.clear()
                 parametrs.append(d)
-
+                
+                list_db = [message.chat.id, gender, age, weight, height, kf, mode, bmr_mode]
+                Add_user(list_db)
 
             except:
                 bot.send_message(message.chat.id, 'Пожалуйста, ответье числом от 1 до 3')
