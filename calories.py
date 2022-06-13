@@ -2,7 +2,7 @@ import telebot
 import calc
 import sqlite3
 
-
+#хуй
 con = sqlite3.connect("food.db", check_same_thread=False)
 cur = con.cursor()
 
