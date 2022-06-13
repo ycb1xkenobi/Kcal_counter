@@ -2,7 +2,7 @@ import telebot
 import calc
 import sqlite3
 #123
-
+#ghbdtn
 con = sqlite3.connect("food.db", check_same_thread=False)
 cur = con.cursor()
 
