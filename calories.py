@@ -4,6 +4,9 @@ import sqlite3
 
 bot = telebot.TeleBot('5510516119:AAFv8yr225_zo-Q9d8ao5QhBggFM7E9c44U')
 
+con = sqlite3.connect("food.db", check_same_thread=False)
+con2 = sqlite3.connect("users.db", check_same_thread=False)
+
 global eaten_food
 eaten_food = []
 
@@ -11,7 +14,6 @@ global parametrs
 parametrs = []
 
 def Search_name(a):
-    con = sqlite3.connect("food.db", check_same_thread=False)
     cur = con.cursor()
     s = []
     s.append(a)
@@ -26,16 +28,17 @@ def Search_name(a):
         print(x)
         sql = f"SELECT * FROM food WHERE name LIKE '%{x}%'"
     cur.execute(sql)
-    con.close()
     return (cur.fetchmany(10))
 
 def Add_user(list):
-    con2 = sqlite3.connect("users.db", check_same_thread=False)
     cur2 = con2.cursor()
     cur2.execute("INSERT INTO users VALUES(?, ?, ?, ?, ?, ?, ?, ?)", list)
     con2.commit()
-    con2.close()
-    print("User added")
+
+def Add_food(list):
+    cur = con.cursor()
+    cur.execute("INSERT INTO food VALUES(?, ?, ?, ?, ?)", list)
+    con.commit()
 
 @bot.message_handler(commands=["start", 'help'])
 def start(m):
@@ -262,6 +265,10 @@ def add_my(message):
                 eaten_food.append(d)
                 bot.send_message(message.chat.id, 'Записал :)')
                 print(eaten_food)
+                
+                food_db = (name_self, ccal_self * weight_self / 100.0, prot_self * weight_self / 100.0, fats_self * weight_self / 100.0, cbh_self * weight_self / 100.0)
+                Add_food(food_db)                
+                
             except:
                 bot.send_message(message.chat.id,
                                  'Пожалуйста введите Вес (г) цифрами и без пробелов или напишите "Отменить"')
